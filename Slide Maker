@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Slide Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Slide Generator</h1>
+        <textarea id="inputText" placeholder="Enter your topic..."></textarea>
+        <button onclick="generateSlide()">Generate Slide</button>
+        <div id="slide" class="slide"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #ece9e6, #ffffff);
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+textarea {
+    width: 80%;
+    height: 100px;
+    margin-bottom: 20px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 25px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.slide {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #f8f9fa;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    display: none;
+    text-align: left;
+}
+
+h2, p {
+    color: #333;
+    margin: 10px 0;
+}
+async function generateSlide() {
+    const inputText = document.getElementById('inputText').value;
+    const slide = document.getElementById('slide');
+
+    if (!inputText) {
+        alert('Please enter a topic.');
+        return;
+    }
+
+    try {
+        // Make a request to your server that connects with an AI API
+        const response = await fetch('https://your-server-endpoint.com/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ topic: inputText })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to generate slide');
+        }
+
+        const data = await response.json();
+
+        // Display the generated content on the slide
+        slide.innerHTML = `
+            <h2>${data.title}</h2>
+            <p>${data.introduction}</p>
+            <ul>
+                ${data.keyPoints.map(point => `<li>${point}</li>`).join('')}
+            </ul>
+            <p>${data.conclusion}</p>
+        `;
+        slide.style.display = 'block';
+    } catch (error) {
+        console.error('Error generating slide:', error);
+        alert('Failed to generate slide content. Please try again later.');
+    }
+}
